@@ -75,7 +75,14 @@ local function generate_widgets(modules, box) --{{{
   end
 end --}}}
 
+local function utf8_decode(str)
+  return str:gsub("\\u(%x%x%x%x)", function(hex)
+    return utf8.char(tonumber(hex, 16))
+     end)
+end
+
 local function parse_json(json_str, box) --{{{
+  json_str = utf8_decode(json_str)
   -- create the array that will be filled with the data from the json output and the iterator
   local modules = {}
   local module_itr = 1 -- lua arrays actually start at anything you want btw

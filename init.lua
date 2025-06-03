@@ -138,6 +138,7 @@ M.setup = function (setup_tbl)
   -- default args
   M.bar_command_limit = false
   M.bar_command = "py3status"
+  M.bar_stop_command = "pkill py3status"
   M.spacer = ' | '
   M.default_color = 'white'
   M.module_override_handler = function(_,_) end
@@ -146,7 +147,12 @@ M.setup = function (setup_tbl)
      M[key] = v
   end
 
-    awful.spawn.with_line_callback(M.bar_command, { stdout = function (stdout) --{{{
+  -- kill statusline on exit
+  awesome.connect_signal("exit", function ()
+    awful.spawn(M.bar_stop_command)
+  end)
+
+  awful.spawn.with_line_callback(M.bar_command, { stdout = function (stdout) --{{{
     -- call the parser
     local modules = parse_json(stdout, M.container)
     update_widgets(bar_widgets, modules)
